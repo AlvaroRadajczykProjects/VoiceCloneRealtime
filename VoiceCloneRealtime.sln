@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.34018.315
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PortaudioMic", "PortaudioMic\PortaudioMic.vcxproj", "{53A17696-7321-46BD-865D-088204E2DDB8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CreateVirtualInputDevice", "CreateVirtualInputDevice\CreateVirtualInputDevice.vcxproj", "{DBC5BF0B-2289-4841-A23C-1C1EC748571C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +17,10 @@ Global
 		{53A17696-7321-46BD-865D-088204E2DDB8}.Debug|x64.Build.0 = Debug|x64
 		{53A17696-7321-46BD-865D-088204E2DDB8}.Release|x64.ActiveCfg = Release|x64
 		{53A17696-7321-46BD-865D-088204E2DDB8}.Release|x64.Build.0 = Release|x64
+		{DBC5BF0B-2289-4841-A23C-1C1EC748571C}.Debug|x64.ActiveCfg = Debug|x64
+		{DBC5BF0B-2289-4841-A23C-1C1EC748571C}.Debug|x64.Build.0 = Debug|x64
+		{DBC5BF0B-2289-4841-A23C-1C1EC748571C}.Release|x64.ActiveCfg = Release|x64
+		{DBC5BF0B-2289-4841-A23C-1C1EC748571C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

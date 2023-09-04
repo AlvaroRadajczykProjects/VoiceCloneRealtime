@@ -5,7 +5,11 @@ VisualStudioVersion = 17.7.34018.315
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PortaudioMic", "PortaudioMic\PortaudioMic.vcxproj", "{53A17696-7321-46BD-865D-088204E2DDB8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CreateVirtualInputDevice", "CreateVirtualInputDevice\CreateVirtualInputDevice.vcxproj", "{DBC5BF0B-2289-4841-A23C-1C1EC748571C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "1_TrainANN", "1_TrainANN\1_TrainANN.vcxproj", "{ECE693BE-151C-4C89-A59A-ADC6A5109F91}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2_TestANN", "2_TestANN\2_TestANN.vcxproj", "{D1778676-C11D-4CC5-8FB0-B3DF608CCE3E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "3_UseANN", "3_UseANN\3_UseANN.vcxproj", "{AB1DBCCE-3C1F-4BDA-8E43-7F81C2224E7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +21,18 @@ Global
 		{53A17696-7321-46BD-865D-088204E2DDB8}.Debug|x64.Build.0 = Debug|x64
 		{53A17696-7321-46BD-865D-088204E2DDB8}.Release|x64.ActiveCfg = Release|x64
 		{53A17696-7321-46BD-865D-088204E2DDB8}.Release|x64.Build.0 = Release|x64
-		{DBC5BF0B-2289-4841-A23C-1C1EC748571C}.Debug|x64.ActiveCfg = Debug|x64
-		{DBC5BF0B-2289-4841-A23C-1C1EC748571C}.Debug|x64.Build.0 = Debug|x64
-		{DBC5BF0B-2289-4841-A23C-1C1EC748571C}.Release|x64.ActiveCfg = Release|x64
-		{DBC5BF0B-2289-4841-A23C-1C1EC748571C}.Release|x64.Build.0 = Release|x64
+		{ECE693BE-151C-4C89-A59A-ADC6A5109F91}.Debug|x64.ActiveCfg = Debug|x64
+		{ECE693BE-151C-4C89-A59A-ADC6A5109F91}.Debug|x64.Build.0 = Debug|x64
+		{ECE693BE-151C-4C89-A59A-ADC6A5109F91}.Release|x64.ActiveCfg = Release|x64
+		{ECE693BE-151C-4C89-A59A-ADC6A5109F91}.Release|x64.Build.0 = Release|x64
+		{D1778676-C11D-4CC5-8FB0-B3DF608CCE3E}.Debug|x64.ActiveCfg = Debug|x64
+		{D1778676-C11D-4CC5-8FB0-B3DF608CCE3E}.Debug|x64.Build.0 = Debug|x64
+		{D1778676-C11D-4CC5-8FB0-B3DF608CCE3E}.Release|x64.ActiveCfg = Release|x64
+		{D1778676-C11D-4CC5-8FB0-B3DF608CCE3E}.Release|x64.Build.0 = Release|x64
+		{AB1DBCCE-3C1F-4BDA-8E43-7F81C2224E7A}.Debug|x64.ActiveCfg = Debug|x64
+		{AB1DBCCE-3C1F-4BDA-8E43-7F81C2224E7A}.Debug|x64.Build.0 = Debug|x64
+		{AB1DBCCE-3C1F-4BDA-8E43-7F81C2224E7A}.Release|x64.ActiveCfg = Release|x64
+		{AB1DBCCE-3C1F-4BDA-8E43-7F81C2224E7A}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

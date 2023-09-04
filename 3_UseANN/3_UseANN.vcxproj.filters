@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CudaCompile Include="kernel.cu" />
+    <CudaCompile Include="ActivationLossFunctions.cu">
+      <Filter>ActivationLossFunctions</Filter>
+    </CudaCompile>
+    <CudaCompile Include="CUDAKernels.cu">
+      <Filter>CUDAKernels</Filter>
+    </CudaCompile>
+    <CudaCompile Include="HostPinnedDeviceMatrix.cu">
+      <Filter>Classes\HostPinnedDeviceMatrix</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Layer.cu">
+      <Filter>Classes\Layer</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Network.cu">
+      <Filter>Classes\Network</Filter>
+    </CudaCompile>
+    <CudaCompile Include="BackpropFunctions.cu">
+      <Filter>BackpropFunctions</Filter>
+    </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ActivationLossFunctions.cuh">
+      <Filter>ActivationLossFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="CUDAKernels.cuh">
+      <Filter>CUDAKernels</Filter>
+    </ClInclude>
+    <ClInclude Include="PrintUtils.h">
+      <Filter>PrintUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="funciones_archivos.h" />
+    <ClInclude Include="HostPinnedDeviceMatrix.cuh">
+      <Filter>Classes\HostPinnedDeviceMatrix</Filter>
+    </ClInclude>
+    <ClInclude Include="Layer.cuh">
+      <Filter>Classes\Layer</Filter>
+    </ClInclude>
+    <ClInclude Include="Network.cuh">
+      <Filter>Classes\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="BackpropFunctions.cuh">
+      <Filter>BackpropFunctions</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ActivationLossFunctions">
+      <UniqueIdentifier>{03ec707d-69a8-4f65-bb0e-a44069c4ee1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CUDAKernels">
+      <UniqueIdentifier>{e8ab7fd8-5dc0-4d11-9a15-91c9015a424d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PrintUtils">
+      <UniqueIdentifier>{3a11a0e8-2d7a-4884-bd4e-59f4a25172e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes">
+      <UniqueIdentifier>{be425fad-7bb1-4316-8333-bd7241e5b3ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Layer">
+      <UniqueIdentifier>{17919680-3594-4b1a-99db-4436c43f10e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Network">
+      <UniqueIdentifier>{9b5c2f0c-0bd8-43b9-ad6c-1a11417a3350}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\HostPinnedDeviceMatrix">
+      <UniqueIdentifier>{fa90aaf0-1a96-44d2-bc15-3e12d3975426}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BackpropFunctions">
+      <UniqueIdentifier>{4b15a5b8-8372-4c30-ab4e-f1f3e93ab82e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PrintUtils.cpp">
+      <Filter>PrintUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="funciones_archivos.cpp" />
+  </ItemGroup>
+</Project>

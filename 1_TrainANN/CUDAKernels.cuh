@@ -75,6 +75,10 @@ __global__ void multiplyMatricesSameDimensionsVectorial(float* dst, float* src);
 
 __global__ void multiplyMatricesSameDimensionsScalar(float* dst, float* src);
 
+__global__ void sumStdDev(float* matrix, float* mean_vector, float* var_vector, int nrows, int ncols);
+
+__global__ void applyLayerNormalization(float* matrix_forward, float* mean_vector, float* var_vector, int nrows, int ncols);
+
 const void managedApplyFunction(cudaStream_t stream, int max_num_threads, int num_elems, float* arr, func_t func);
 
 const void managedApplyLossFunction(cudaStream_t stream, int max_num_threads, int num_elems, float* pred, float* real, float* dst, func2_t func);
@@ -84,5 +88,9 @@ const void managedMultiplyAllElementsByConstant(cudaStream_t stream, int max_num
 const void managedSumVectorsSameDimensions(cudaStream_t stream, int max_num_threads, int num_elems, float* dst, float* src);
 
 const void managedMultiplyMatricesSameDimensions(cudaStream_t stream, int max_num_threads, int num_elems, float* dst, float* src);
+
+const void managedSumStdDev(cudaStream_t stream, int max_num_threads, float* matrix, float* mean_vector, float* var_vector, int nrows, int ncols);
+
+const void managedApplyLayerNormalization(cudaStream_t stream, int max_num_threads, float* matrix_forward, float* mean_vector, float* var_vector, int nrows, int ncols);
 
 #endif

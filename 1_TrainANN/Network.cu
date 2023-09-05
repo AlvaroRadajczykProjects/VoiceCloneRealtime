@@ -28,7 +28,7 @@ void applyVGradAdam(Network* n, float lrate, float* params, int nparams) {
 	}
 }
 
-Network::Network(int is, int nn, int nl, Layer** ls, func2_t ls_fn, func2_t dls_fn) {
+Network::Network(int is, int nn, int nl, Layer** ls, func2_t ls_fn, func2_t dls_fn, bool norm_input) {
 	cudaDeviceProp deviceProp;
 	cudaGetDeviceProperties(&deviceProp, 0);
 	max_num_threads = deviceProp.maxThreadsPerBlock;
@@ -41,6 +41,8 @@ Network::Network(int is, int nn, int nl, Layer** ls, func2_t ls_fn, func2_t dls_
 	number_layers = nl;
 	layers = ls;
 	layers[0]->setIsFirstLayer(true);
+	layers[0]->setNormalizeInput(norm_input);
+	layers[nl - 1]->setIsLastLayer(true);
 	cublasCreate_v2(&handle);
 	for (int i = 0; i < number_layers; i++) {
 		max_layer_size = max(max_layer_size, layers[i]->getSize());
@@ -154,12 +156,12 @@ void Network::initForward(int max_num_input_examples_expected) {
 	input_train = new HostPinnedDeviceMatrix(max_train_number_examples, input_size, 4, cudaHostAllocWriteCombined);
 	output_train = new HostPinnedDeviceMatrix(max_train_number_examples, output_size, 4, cudaHostAllocWriteCombined);
 
-	int* hd_input_pointers = new int [number_networks];
+	int* hd_input_pointers = new int[number_networks];
 	for (int i = 0; i < number_networks; i++) { hd_input_pointers[i] = 0; }
 	d_input_train_pointers = input_train->generateDeviceRowsPointers(0, number_networks, hd_input_pointers);
 	delete hd_input_pointers;
 
-	int tam = nextFourMultiple(max(max(max_batch_size, number_networks), output_size));
+	int tam = nextFourMultiple(max(max_batch_size * number_networks, output_size));
 	cudaMalloc(&d_auxiliar_expand_reduce_matrix, tam * sizeof(float));
 	float* h_auxiliar_expand_reduce_matrix = new float[tam];
 	for (int i = 0; i < tam; i++) { h_auxiliar_expand_reduce_matrix[i] = 1.0f; }
@@ -208,11 +210,11 @@ void Network::initForwardTrain(int max_train_examples, int max_validation_exampl
 	int* hd_input_pointers = new int[number_networks];
 	for (int i = 0; i < number_networks; i++) { hd_input_pointers[i] = 0; }
 	d_input_train_pointers = input_train->generateDeviceRowsPointers(0, number_networks, hd_input_pointers);
-	
+
 	if (max_validation_number_examples > 0) {
 		d_input_validation_pointers = input_validation->generateDeviceRowsPointers(0, number_networks, hd_input_pointers);
 	}
-	
+
 	delete hd_input_pointers;
 
 	/*float** hd_input_pointers = new float* [number_networks];
@@ -361,7 +363,7 @@ const void Network::forwardTrain(int num_examples, int batch_size, float** d_poi
 void Network::noBackwardNetworksOutCounter(int batch_size, int* early_counters) {
 	for (int i = 0; i < number_networks; i++) {
 		if (early_counters[i] < 1) {
-			cudaMemset(d_auxiliar_matrix_loss_function_error_backprop + i*(batch_size * output_size), 0, batch_size * output_size * sizeof(float));
+			cudaMemset(d_auxiliar_matrix_loss_function_error_backprop + i * (batch_size * output_size), 0, batch_size * output_size * sizeof(float));
 		}
 	}
 }
@@ -380,6 +382,8 @@ float* Network::trainGetCostFunctionAndCalculateLossFunction(int num_examples, i
 		if (num_examples % batch_size == 0) {
 			int num_elems_batch = batch_size * input_size;
 
+			cudaFree(d_input_train_pointers);
+			d_input_train_pointers = NULL;
 			d_input_train_pointers = input_train->generateDeviceRowsPointers(offset_id, number_networks, batch_ids);
 			forwardTrain(num_examples, batch_size, d_input_train_pointers);
 
@@ -445,6 +449,8 @@ float* Network::validationGetCostFunctionAndCalculateLossFunction(int num_exampl
 		if (num_examples % batch_size == 0) {
 			int num_elems_batch = batch_size * input_size;
 
+			cudaFree(d_input_validation_pointers);
+			d_input_validation_pointers = NULL;
 			d_input_validation_pointers = input_validation->generateDeviceRowsPointers(offset_id, number_networks, batch_ids);
 			forwardTrain(num_examples, batch_size, d_input_validation_pointers);
 
@@ -504,7 +510,7 @@ float* Network::backwardPhase(int num_examples, int batch_size, int offset_id, i
 	if (num_examples <= max_train_number_examples && batch_size <= max_batch_size) {
 		if (num_examples % batch_size == 0) {
 			float* cost_function = trainGetCostFunctionAndCalculateLossFunction(num_examples, batch_size, offset_id, batch_ids);
-			if(early_counters!= NULL){ noBackwardNetworksOutCounter(batch_size, early_counters); }
+			if (early_counters != NULL) { noBackwardNetworksOutCounter(batch_size, early_counters); }
 			for (int i = number_layers - 1; i > 0; i--) {
 				layers[i]->backward(stream_principal, layers[i - 1], batch_size);
 			}
@@ -534,9 +540,9 @@ void Network::epochAllExamples(float lrate, float* params, int nparams, func_bac
 
 	memset(val_indices, 0, number_validation_batches * repeat_validation_arr * sizeof(float));
 	for (int i = 0; i < number_validation_batches; i++) { val_indices[i] = i * max_batch_size; }
-	edu_shuffle(val_indices, number_validation_batches);
+	//edu_shuffle(val_indices, number_validation_batches);
 	for (int i = 1; i < repeat_validation_arr; i++) { memcpy(val_indices + i * number_validation_batches, val_indices, number_validation_batches * sizeof(int)); }
-	
+
 	/*printf("\nIndices validacion: ");
 	for (int i = 0; i < number_validation_batches * repeat_validation_arr; i++) { printf("%d, ", val_indices[i]); }
 	printf("\n");*/
@@ -547,24 +553,24 @@ void Network::epochAllExamples(float lrate, float* params, int nparams, func_bac
 		for (int j = 0; j < number_networks; j++) { cost_train[j] += tmp_res_cost_train[j] * max_batch_size / (float)max_train_number_examples; }
 		delete tmp_res_cost_train;
 	}
-	if (number_remainder_train_examples > 0) {
+	/*if (number_remainder_train_examples > 0) {
 		//printf("\nResto de entrenamiento en: %d\n", max_train_number_examples - number_remainder_train_examples);
 		float* tmp_res_cost_train = backwardPhase(number_remainder_train_examples, max_train_number_examples - number_remainder_train_examples, early_counters);
 		backprop_function(this, lrate, params, nparams);
 		for (int j = 0; j < number_networks; j++) { cost_train[j] += tmp_res_cost_train[j] * number_remainder_train_examples / (float)max_train_number_examples; }
 		delete tmp_res_cost_train;
-	}
+	}*/
 
 	for (int i = 0; i < max(1, number_validation_batches - number_networks + 1); i++) {
 		float* tmp_res_cost_val = validationGetCostFunctionAndCalculateLossFunction(number_validation_batches * max_batch_size, max_batch_size, 0, val_indices + i);
 		for (int j = 0; j < number_networks; j++) { cost_val[j] += tmp_res_cost_val[j] * max_batch_size / (float)max_validation_number_examples; }
 		delete tmp_res_cost_val;
 	}
-	if (number_remainder_validation_examples > 0) {
+	/*if (number_remainder_validation_examples > 0) {
 		float* tmp_res_cost_val = validationGetCostFunctionAndCalculateLossFunction(number_remainder_validation_examples, max_validation_number_examples - number_remainder_validation_examples);
 		for (int j = 0; j < number_networks; j++) { cost_val[j] += tmp_res_cost_val[j] * number_remainder_validation_examples / (float)max_validation_number_examples; }
 		delete tmp_res_cost_val;
-	}
+	}*/
 
 }
 
@@ -572,11 +578,11 @@ void Network::trainAllExamplesMaxBatch(func_lrate function_learning_rate, int np
 
 	int number_train_batches = max_train_number_examples / max_batch_size;
 	int number_remainder_train_examples = max_train_number_examples % max_batch_size;
-	int repeat_train_arr = (int) ceil( (number_train_batches + number_networks - 1) / (float)number_train_batches);
+	int repeat_train_arr = (int)ceil((number_train_batches + number_networks - 1) / (float)number_train_batches);
 
 	int number_validation_batches = max_validation_number_examples / max_batch_size;
 	int number_remainder_validation_examples = max_validation_number_examples % max_batch_size;
-	int repeat_validation_arr = (int) ceil( (number_validation_batches + number_networks - 1) / (float)number_validation_batches);
+	int repeat_validation_arr = (int)ceil((number_validation_batches + number_networks - 1) / (float)number_validation_batches);
 
 	/*printf("\nnumber_train_batches: %d", number_train_batches);
 	printf("\nnumber_remainder_train_examples: %d", number_remainder_train_examples);
@@ -683,7 +689,7 @@ void Network::finalizeForwardBackward() {
 }
 
 void Network::storeNetworkInFile(char* name) {
-	
+
 	unsigned long long num_elems = 0;
 	for (int i = 0; i < number_layers; i++) { num_elems += layers[i]->getTotalElementsBiasVectors() + layers[i]->getTotalElementsWeightMatrices(); }
 
@@ -695,14 +701,14 @@ void Network::storeNetworkInFile(char* name) {
 		offset += layers[i]->getTotalElementsBiasVectors() + layers[i]->getTotalElementsWeightMatrices();
 	}
 
-	char* buffer = (char*) data;
+	char* buffer = (char*)data;
 	crearArchivoEscribirYCerrar(name, num_elems * sizeof(float), buffer);
 
 	delete data;
 }
 
 void Network::loadNetworkFromFile(char* name) {
-	
+
 	unsigned int nbytes = 0;
 
 	char* cargar = leerArchivoYCerrar(name, &nbytes);

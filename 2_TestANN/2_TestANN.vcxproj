@@ -36,7 +36,7 @@
     <ClCompile Include="WaveFile.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{D1778676-C11D-4CC5-8FB0-B3DF608CCE3E}</ProjectGuid>
+    <ProjectGuid>{C87FFE7A-D4A1-4EA5-BB1E-F904FC4B46B6}</ProjectGuid>
     <RootNamespace>2_TestANN</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.20348.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -67,7 +67,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <ExternalIncludePath>C:\Users\ALVARO\Documents\GitHub\VoiceCloneRealtime\include</ExternalIncludePath>
+    <ExternalIncludePath>C:\Users\alvaro\source\repos\ANN\include</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ExternalIncludePath>C:\Users\ALVARO\Documents\GitHub\VoiceCloneRealtime\include</ExternalIncludePath>

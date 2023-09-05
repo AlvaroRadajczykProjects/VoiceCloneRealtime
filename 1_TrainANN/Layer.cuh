@@ -17,6 +17,8 @@ class Layer {
         int number_input_examples = 0;
         bool is_training = false;
         bool is_first_layer = false;
+        bool is_last_layer = false;
+        bool normalize_input = false;
 
         cublasHandle_t* handle;
 
@@ -61,6 +63,9 @@ class Layer {
         float* d_bias_vector_momentum = NULL;
         float* d_weight_matrix_velocity = NULL;
         float* d_bias_vector_velocity = NULL;
+
+        float* d_first_layer_means = NULL;
+        float* d_first_layer_vars = NULL;
         
     public:
         //dev_act_func and dev_act_der_func are __device__ float func(), need to be casted to (const void*)
@@ -88,8 +93,10 @@ class Layer {
         void setAuxiliarExpandReduceMatrix(float* set);
         void setNumberNetworks(int nn);
         void setIsFirstLayer(bool set);
+        void setIsLastLayer(bool set);
         void setIsTraining(bool set);
         void setCublasHandle(cublasHandle_t* h);
+        void setNormalizeInput(bool set);
 
         void initWeightBiasValues(curandGenerator_t curandGenerator);
 

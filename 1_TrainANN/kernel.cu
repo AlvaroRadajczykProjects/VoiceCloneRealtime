@@ -12,7 +12,7 @@
 #include <portaudio.h>
 
 #define SAMPLE_RATE 44100
-#define FRAMES_PER_BUFFER 256 //lo hace 512 veces por segundo? si más grande más datos y más lento aunque a veces puede ser útil
+#define FRAMES_PER_BUFFER 512 //lo hace 512 veces por segundo? si más grande más datos y más lento aunque a veces puede ser útil
 
 
 struct pointers {
@@ -153,11 +153,11 @@ func_t d_func = 0;
 func2_t d_func2 = 0;
 func3_t d_func3 = 0;
 
-float val = 0.002;
+float val = 0.006;
 
 //first epoch number is 0
 float lrate_func(int epoch) {
-    if (epoch % 1000 == 0 && val > 0.0005) { val = val / (float)2; }
+    if (epoch % 500 == 0 && val > 0.0002) { val = val / (float)2; }
     return val;
 }
 
@@ -220,7 +220,7 @@ int main() {
     salida = p.ptr2;
 
     const int nejemplos = tam_arr / FRAMES_PER_BUFFER;//tam_arr/1024;//tam_arr%1024;
-    int nejemplos_train = (int)nejemplos * 0.8;
+    int nejemplos_train = (int)nejemplos * 0.9;
     int nejemplos_test = nejemplos - nejemplos_train;
 
     printf("\nNumero de ejemplos: %d", nejemplos);
@@ -232,18 +232,19 @@ int main() {
 
     Network* n = new Network(FRAMES_PER_BUFFER, 1, 3, new Layer * [3] {
         new Layer(FRAMES_PER_BUFFER, ELU, dELU),
-            new Layer(FRAMES_PER_BUFFER, ELU, dELU),
-            new Layer(FRAMES_PER_BUFFER, Linear, dLinear),
-        }, MSE, dMSE);
+        new Layer(FRAMES_PER_BUFFER, ELU, dELU),
+        new Layer(FRAMES_PER_BUFFER, Linear, dLinear),
+    }, MSE, dMSE, true);
 
     n->initWeightBiasValues();
 
-    n->initForwardTrain(nejemplos_train, nejemplos_test, 32);
+    n->initForwardTrain(nejemplos_train, nejemplos_test, 1024);
 
     n->copyInputOutputTrain(nejemplos_train, entrada, salida);
     n->copyInputOutputValidation(nejemplos_test, entrada + nejemplos_train * FRAMES_PER_BUFFER, salida + nejemplos_train * FRAMES_PER_BUFFER);
 
-    n->trainAllExamplesMaxBatch(lrate_func, 3, new float[3] { 0.9, 0.999, 0.00000001 }, applyVGradAdam, 5000, 500, 0.1, 0.000045, 10);
+    //n->trainAllExamplesMaxBatch(lrate_func, 3, new float[3] { 0.9, 0.999, 0.00000001 }, applyVGradAdam, 20000, 500, 0.1, 0.000001, 10);
+    n->trainAllExamplesMaxBatch(lrate_func, 0, NULL, applyVGradSGD, 100000, 100, 0.1, 0.0001, 10);
 
     //n->showForwardMatrices();
 

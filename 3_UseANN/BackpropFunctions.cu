@@ -40,21 +40,21 @@ __global__ void calcularVectorGradienteAdam(float tapren, float b1, float b2, fl
 
 void managedActualizarValoresMatrizMomentoAdam(cudaStream_t stream, int max_threads_block, const float* grad, float* mdst, float b1, int nrows, int ncols) {
     int sqrt_dim = (int) sqrt(max_threads_block);
-    dim3 grid(sqrt_dim, sqrt_dim);
-    dim3 block((int)ceil(nrows/ (float)sqrt_dim), (int)ceil(ncols / (float)sqrt_dim));
+    dim3 grid((int)ceil(nrows / (float)sqrt_dim), (int)ceil(ncols / (float)sqrt_dim));
+    dim3 block(sqrt_dim, sqrt_dim);
     actualizarValoresMatrizMomentoAdam << < grid, block, 0, stream >> > (grad, mdst, b1, nrows, ncols);
 }
 
 void managedActualizarValoresMatrizVelocidadAdam(cudaStream_t stream, int max_threads_block, const float* grad, float* mdst, float b2, int nrows, int ncols) {
     int sqrt_dim = (int)sqrt(max_threads_block);
-    dim3 grid(sqrt_dim, sqrt_dim);
-    dim3 block((int)ceil(nrows / (float)sqrt_dim), (int)ceil(ncols / (float)sqrt_dim));
+    dim3 grid((int)ceil(nrows / (float)sqrt_dim), (int)ceil(ncols / (float)sqrt_dim));
+    dim3 block(sqrt_dim, sqrt_dim);
     actualizarValoresMatrizVelocidadAdam << < grid, block, 0, stream >> > (grad, mdst, b2, nrows, ncols);
 }
 
 void managedCalcularVectorGradienteAdam(cudaStream_t stream, int max_threads_block, float tapren, float b1, float b2, float epsilon, float* mdst, const float* mom, const float* vel, int nrows, int ncols) {
     int sqrt_dim = (int)sqrt(max_threads_block);
-    dim3 grid(sqrt_dim, sqrt_dim);
-    dim3 block((int)ceil(nrows / (float)sqrt_dim), (int)ceil(ncols / (float)sqrt_dim));
+    dim3 grid((int)ceil(nrows / (float)sqrt_dim), (int)ceil(ncols / (float)sqrt_dim));
+    dim3 block(sqrt_dim, sqrt_dim);
     calcularVectorGradienteAdam << < grid, block, 0, stream >> > (tapren, b1, b2, epsilon, mdst, mom, vel, nrows, ncols);
 }

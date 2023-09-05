@@ -6,7 +6,7 @@
 #include "portaudio.h"
 
 #define SAMPLE_RATE 44100
-#define FRAMES_PER_BUFFER 256 //lo hace 512 veces por segundo? si más grande más datos y más lento aunque a veces puede ser útil
+#define FRAMES_PER_BUFFER 512 //lo hace 512 veces por segundo? si más grande más datos y más lento aunque a veces puede ser útil
 
 using namespace std;
 
@@ -161,11 +161,11 @@ int main() {
 	checkErr(err);
 	*/
 
-	n = new Network(FRAMES_PER_BUFFER, 1, 3, new Layer * [3] {
+	Network* n = new Network(FRAMES_PER_BUFFER, 1, 3, new Layer * [3] {
 		new Layer(FRAMES_PER_BUFFER, ELU, dELU),
-			new Layer(FRAMES_PER_BUFFER, ELU, dELU),
-			new Layer(FRAMES_PER_BUFFER, Linear, dLinear),
-		}, MSE, dMSE);
+		new Layer(FRAMES_PER_BUFFER, ELU, dELU),
+		new Layer(FRAMES_PER_BUFFER, Linear, dLinear),
+	}, MSE, dMSE, true);
 
 	n->loadNetworkFromFile("..\\network_trained_bias_weights.data");
 

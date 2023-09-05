@@ -31,7 +31,6 @@
     <ClInclude Include="PrintUtils.h">
       <Filter>PrintUtils</Filter>
     </ClInclude>
-    <ClInclude Include="funciones_archivos.h" />
     <ClInclude Include="HostPinnedDeviceMatrix.cuh">
       <Filter>Classes\HostPinnedDeviceMatrix</Filter>
     </ClInclude>
@@ -43,6 +42,12 @@
     </ClInclude>
     <ClInclude Include="BackpropFunctions.cuh">
       <Filter>BackpropFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="funciones_archivos.h">
+      <Filter>FileManagement</Filter>
+    </ClInclude>
+    <ClInclude Include="WaveFile.h">
+      <Filter>FileManagement</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -70,11 +75,19 @@
     <Filter Include="BackpropFunctions">
       <UniqueIdentifier>{4b15a5b8-8372-4c30-ab4e-f1f3e93ab82e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FileManagement">
+      <UniqueIdentifier>{b68c47fd-b6c7-4d71-bd95-bb4127c95a59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PrintUtils.cpp">
       <Filter>PrintUtils</Filter>
     </ClCompile>
-    <ClCompile Include="funciones_archivos.cpp" />
+    <ClCompile Include="funciones_archivos.cpp">
+      <Filter>FileManagement</Filter>
+    </ClCompile>
+    <ClCompile Include="WaveFile.cpp">
+      <Filter>FileManagement</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

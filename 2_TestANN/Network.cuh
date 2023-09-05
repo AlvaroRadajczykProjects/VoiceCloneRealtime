@@ -64,7 +64,7 @@ class Network {
         */
 
     public:
-        Network( int is, int nn, int nl, Layer** ls, func2_t ls_fn, func2_t dls_fn);
+        Network( int is, int nn, int nl, Layer** ls, func2_t ls_fn, func2_t dls_fn, bool norm_input);
         ~Network();
 
         void showInfoAboutNetwork();

@@ -140,6 +140,40 @@ __global__ void multiplyMatricesSameDimensionsScalar(float* dst, float* src) {
     dst[idx] = dst[idx] + src[idx];
 }
 
+__global__ void sumStdDev(float* matrix, float* mean_vector, float* var_vector, int nrows, int ncols) {
+    int row = blockIdx.x * blockDim.x + threadIdx.x;
+    int col = blockIdx.y * blockDim.y + threadIdx.y;
+    __shared__ float vals[32][32];
+    if (row < nrows && col < ncols) {
+        vals[threadIdx.x][threadIdx.y] = powf(matrix[row * ncols + col]-mean_vector[row], 2.0f);
+    } else {
+        vals[threadIdx.x][threadIdx.y] = 0;
+    }
+    __syncthreads();
+
+    if ((threadIdx.y + 1) % 2 == 0) { vals[threadIdx.x][threadIdx.y] += vals[threadIdx.x][threadIdx.y - 1]; }
+    __syncthreads();
+    if ((threadIdx.y + 1) % 4 == 0) { vals[threadIdx.x][threadIdx.y] += vals[threadIdx.x][threadIdx.y - 2]; }
+    __syncthreads();
+    if ((threadIdx.y + 1) % 8 == 0) { vals[threadIdx.x][threadIdx.y] += vals[threadIdx.x][threadIdx.y - 4]; }
+    __syncthreads();
+    if ((threadIdx.y + 1) % 16 == 0) { vals[threadIdx.x][threadIdx.y] += vals[threadIdx.x][threadIdx.y - 8]; }
+    __syncthreads();
+    if ((threadIdx.y + 1) % 32 == 0) { vals[threadIdx.x][threadIdx.y] += vals[threadIdx.x][threadIdx.y - 16]; }
+    __syncthreads();
+
+    //if ((threadIdx.y + 1) % 32 == 0 && row < nrows) { printf("\n:)");  stddev_vector[row] = 3; }
+    if ((threadIdx.y + 1) % 32 == 0 && row < nrows) { atomicAdd(&var_vector[row], vals[threadIdx.x][threadIdx.y]); }
+}
+
+__global__ void applyLayerNormalization(float* matrix_forward, float* mean_vector, float* var_vector, int nrows, int ncols) {
+    int row = blockIdx.x * blockDim.x + threadIdx.x;
+    int col = blockIdx.y * blockDim.y + threadIdx.y;
+    if (row < nrows && col < ncols) {
+        matrix_forward[row * ncols + col] = (matrix_forward[row * ncols + col] - mean_vector[row]) / sqrtf(var_vector[row]);
+    }
+}
+
 const void managedApplyFunction(cudaStream_t stream, int max_num_threads, int num_elems, float* arr, func_t func) {
     int nblocks = (int)(num_elems / (4 * max_num_threads));
     applyFunctionVectorial <<< nblocks, max_num_threads, 0, stream >> > (arr, func);
@@ -193,4 +227,18 @@ const void managedMultiplyMatricesSameDimensions(cudaStream_t stream, int max_nu
     offset += ((num_elems / 4) * 4);
     num_elems -= (num_elems / 4) * 4;
     multiplyMatricesSameDimensionsScalar << < 1, num_elems % 4, 0, stream >> > (dst + offset, src + offset);
+}
+
+const void managedSumStdDev(cudaStream_t stream, int max_num_threads, float* matrix, float* mean_vector, float* stddev_vector, int nrows, int ncols) {
+    int sqrt_dim = (int)sqrt(max_num_threads);
+    dim3 grid((int)ceil(nrows / (float)sqrt_dim), (int)ceil(ncols / (float)sqrt_dim));
+    dim3 block(sqrt_dim, sqrt_dim);
+    sumStdDev << < grid, block, 0, stream >> > (matrix, mean_vector, stddev_vector, nrows, ncols);
+}
+
+const void managedApplyLayerNormalization(cudaStream_t stream, int max_num_threads, float* matrix_forward, float* mean_vector, float* var_vector, int nrows, int ncols) {
+    int sqrt_dim = (int)sqrt(max_num_threads);
+    dim3 grid((int)ceil(nrows / (float)sqrt_dim), (int)ceil(ncols / (float)sqrt_dim));
+    dim3 block(sqrt_dim, sqrt_dim);
+    applyLayerNormalization << < grid, block, 0, stream >> > (matrix_forward, mean_vector, var_vector, nrows, ncols);
 }
